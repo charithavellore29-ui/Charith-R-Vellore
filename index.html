@@ -285,6 +285,129 @@
     .hero-title{font-size:29px;}
     .sec-title{font-size:25px;}
   }
+
+/* ===== PROJECT FILTER BUTTONS ===== */
+
+.project-filters {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 12px;
+  margin: 30px 0;
+}
+
+.filter-btn {
+  padding: 10px 20px;
+  border: 1px solid #c5a46d;
+  border-radius: 25px;
+  background: transparent;
+  color: inherit;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.filter-btn:hover,
+.filter-btn.active {
+  background: #c5a46d;
+  color: #111827;
+}
+
+/* ===== PROJECT CARD HOVER ===== */
+
+.proj-card {
+  cursor: pointer;
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+.proj-card:hover {
+  transform: translateY(-6px);
+  box-shadow: 0 12px 30px rgba(0,0,0,0.15);
+}
+
+/* ===== PROJECT DETAILS POPUP ===== */
+
+.project-modal {
+  display: none;
+  position: fixed;
+  inset: 0;
+  z-index: 9999;
+  background: rgba(0,0,0,0.75);
+  padding: 20px;
+  align-items: center;
+  justify-content: center;
+}
+
+.project-modal.show {
+  display: flex;
+}
+
+.project-modal-content {
+  position: relative;
+  width: 100%;
+  max-width: 650px;
+  max-height: 85vh;
+  overflow-y: auto;
+  padding: 35px;
+  border-radius: 18px;
+  background: #fff;
+  color: #172033;
+  animation: popupAppear 0.3s ease;
+}
+
+.project-modal-content h2 {
+  margin: 18px 0;
+  font-size: 25px;
+}
+
+.project-modal-content h4 {
+  margin: 20px 0 8px;
+  color: #a47b3d;
+}
+
+.project-modal-content p {
+  line-height: 1.7;
+}
+
+.modal-close {
+  position: absolute;
+  top: 12px;
+  right: 18px;
+  border: none;
+  background: transparent;
+  color: #172033;
+  font-size: 30px;
+  cursor: pointer;
+}
+
+#modalSkills {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+#modalSkills span {
+  padding: 7px 12px;
+  border-radius: 15px;
+  background: #eee8dd;
+  font-size: 12px;
+}
+
+@keyframes popupAppear {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@media (max-width: 600px) {
+  .project-modal-content {
+    padding: 25px 20px;
+  }
+}
 </style>
 </head>
 <body>
@@ -475,9 +598,33 @@
       <div class="sec-eyebrow"><span class="dash"></span>Academic Projects</div>
       <h2 class="sec-title">Applied research</h2>
     </div>
-    <div class="proj-grid reveal" id="projGrid"></div>
+    <!-- Project Category Filters -->
+<div class="project-filters">
+  <button class="filter-btn active" data-filter="all">All Projects</button>
+  <button class="filter-btn" data-filter="finance">Finance</button>
+  <button class="filter-btn" data-filter="powerbi">Power BI</button>
+  <button class="filter-btn" data-filter="analytics">Data Analytics</button>
+  <button class="filter-btn" data-filter="research">Research</button>
+  <button class="filter-btn" data-filter="strategy">Business Strategy</button>
+</div>
+
+<!-- Project Cards -->
+<div class="proj-grid reveal" id="projGrid"></div>
+
+<!-- Project Details Popup -->
+<div class="project-modal" id="projectModal">
+  <div class="project-modal-content">
+    <button class="modal-close" id="modalClose">&times;</button>
+    <span class="proj-tag" id="modalTag"></span>
+    <h2 id="modalTitle"></h2>
+    <h4>Objective</h4>
+    <p id="modalObjective"></p>
+    <h4>Key Areas Studied</h4>
+    <p id="modalAreas"></p>
+    <h4>Tools & Skills</h4>
+    <div id="modalSkills"></div>
   </div>
-</section>
+</div>
 
 <!-- ================= WORK EXPERIENCE ================= -->
 <section id="experience" class="section section-alt">
@@ -970,18 +1117,122 @@ document.getElementById('skillGrid').innerHTML = skillGroups.map(g=>`
   </div>
 `).join('');
 
+
 // ---------- render projects ----------
-document.getElementById('projGrid').innerHTML = projects.map(p=>`
-  <div class="proj-card ${p.feature?'feature':''}">
+
+function getProjectCategories(p) {
+  const title = p.title.toLowerCase();
+
+  if (title.includes('equity') || title.includes('celine')) {
+    return 'finance research';
+  }
+
+  if (title.includes('electric vehicle') || title.includes('university')) {
+    return 'powerbi analytics';
+  }
+
+  if (title.includes('credit') || title.includes('market basket') || title.includes('yourstory')) {
+    return 'analytics';
+  }
+
+  if (title.includes('frostgrid')) {
+    return 'strategy';
+  }
+
+  return 'research';
+}
+
+document.getElementById('projGrid').innerHTML = projects.map((p, index) => `
+  <div class="proj-card ${p.feature ? 'feature' : ''}"
+       data-index="${index}"
+       data-categories="${getProjectCategories(p)}">
     <span class="proj-tag">${p.tag}</span>
     <h4>${p.title}</h4>
     <div class="proj-sub">Objective</div>
     <p class="body-text">${p.objective}</p>
     <div class="proj-sub">Key Areas Studied</div>
     <p class="body-text">${p.areas}</p>
-    <div class="proj-skill-row">${p.skills.map(s=>`<span class="tool-tag">${s}</span>`).join('')}</div>
+    <div class="proj-skill-row">
+      ${p.skills.map(s => `<span class="tool-tag">${s}</span>`).join('')}
+    </div>
+    <p class="proj-sub">Click to explore →</p>
   </div>
 `).join('');
+
+// ---------- PROJECT FILTERS ----------
+
+document.querySelectorAll('.filter-btn').forEach(button => {
+  button.addEventListener('click', () => {
+    const selectedFilter = button.dataset.filter;
+
+    document.querySelectorAll('.filter-btn').forEach(btn => {
+      btn.classList.remove('active');
+    });
+
+    button.classList.add('active');
+
+    document.querySelectorAll('.proj-card').forEach(card => {
+      const categories = card.dataset.categories;
+
+      if (
+        selectedFilter === 'all' ||
+        categories.split(' ').includes(selectedFilter)
+      ) {
+        card.style.display = '';
+      } else {
+        card.style.display = 'none';
+      }
+    });
+  });
+});
+
+// ---------- PROJECT DETAILS POPUP ----------
+
+const projectModal = document.getElementById('projectModal');
+const modalClose = document.getElementById('modalClose');
+
+document.getElementById('projGrid').addEventListener('click', function(event) {
+  const card = event.target.closest('.proj-card');
+
+  if (!card) return;
+
+  const project = projects[Number(card.dataset.index)];
+
+  document.getElementById('modalTag').textContent = project.tag;
+  document.getElementById('modalTitle').textContent = project.title;
+  document.getElementById('modalObjective').textContent = project.objective;
+  document.getElementById('modalAreas').textContent = project.areas;
+
+  const skillsContainer = document.getElementById('modalSkills');
+  skillsContainer.innerHTML = '';
+
+  project.skills.forEach(skill => {
+    const span = document.createElement('span');
+    span.textContent = skill;
+    skillsContainer.appendChild(span);
+  });
+
+  projectModal.classList.add('show');
+});
+
+function closeProjectModal() {
+  projectModal.classList.remove('show');
+}
+
+modalClose.addEventListener('click', closeProjectModal);
+
+projectModal.addEventListener('click', function(event) {
+  if (event.target === projectModal) {
+    closeProjectModal();
+  }
+});
+
+document.addEventListener('keydown', function(event) {
+  if (event.key === 'Escape') {
+    closeProjectModal();
+  }
+});
+
 
 // ---------- render journey flow ----------
 document.getElementById('flowList').innerHTML = flowSteps.map((s,i)=>`
