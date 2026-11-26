@@ -967,7 +967,94 @@
     visibility: visible !important;
     transform: none !important;
 }
+/* =========================================
+   INTERNSHIP SECTION — READABILITY FIX
+   ========================================= */
 
+/* Internship accordion card */
+.cat {
+    background: #182534 !important;
+    border: 1px solid #455267 !important;
+    border-radius: 10px !important;
+    color: #F7F4ED !important;
+}
+
+/* Card heading */
+.cat-head {
+    background: #182534 !important;
+    color: #F7F4ED !important;
+}
+
+.cat-title {
+    color: #F7F4ED !important;
+    font-weight: 700 !important;
+}
+
+.cat-sub {
+    color: #C0C8D2 !important;
+}
+
+.cat-letter {
+    color: #E8D19D !important;
+}
+
+/* Expand / collapse icon */
+.cat-arrow {
+    color: #F7F4ED !important;
+    border-color: #AAB4C2 !important;
+}
+
+/* Expanded content area */
+.cat-body {
+    background: #182534 !important;
+}
+
+.cat-body-inner {
+    background: #182534 !important;
+    border-top: 1px solid #455267 !important;
+}
+
+/* Column headings */
+.cat-col-label {
+    color: #E8D19D !important;
+    font-weight: 700 !important;
+}
+
+/* Description and bullet points */
+.cat-body ul,
+.cat-body ul li {
+    color: #E2E6ED !important;
+    line-height: 1.8 !important;
+}
+
+/* Tools and platforms */
+.tool-tag {
+    background: #34445A !important;
+    color: #FFFFFF !important;
+    border: 1px solid #687990 !important;
+}
+
+/* Internship timeline scrollbar */
+.phase-rail {
+    scrollbar-width: none !important;
+    -ms-overflow-style: none !important;
+}
+
+.phase-rail::-webkit-scrollbar {
+    display: none !important;
+}
+
+/* Mobile layout */
+@media (max-width: 700px) {
+    .cat-body-inner {
+        grid-template-columns: 1fr !important;
+        gap: 18px !important;
+    }
+
+    .cat-head {
+        padding: 18px !important;
+    }
+}
 </style>
 </head>
 <body>
